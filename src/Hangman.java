@@ -12,9 +12,7 @@ public class Hangman extends ConsoleProgram {
 
     public void run() {
         println("Welcome to Hangman!");
-        while (true) {
-            beginRound();
-        }
+        beginRound();
     }
 
     private void beginRound() {
@@ -25,7 +23,7 @@ public class Hangman extends ConsoleProgram {
 
         System.out.println("Word: " + currentWord);
 
-        while (attemptCount > 1 && guessedWord != currentWord) {
+        while (attemptCount > 0 && !guessedWord.equals(currentWord)) {
             println("The word now looks like this: " + guessedWord);
             println("You have " + attemptCount + " guesses left.");
 
@@ -40,6 +38,13 @@ public class Hangman extends ConsoleProgram {
             }
         }
 
+        if (guessedWord.equals(currentWord)) {
+            println("You guessed the word: " + currentWord);
+            println("You win.");
+        } else {
+            println("The word was: " + currentWord);
+            println("You lose.");
+        }
     }
 
     private String updateGuessWord(String guessedWord, String currentWord, char guess) {
