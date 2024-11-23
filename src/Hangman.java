@@ -17,7 +17,7 @@ public class Hangman extends ConsoleProgram {
 
     private void beginRound() {
         int attemptCount = GUESS_COUNT;
-        int idx = rgen.nextInt(1, lexicon.getWordCount());
+        int idx = rgen.nextInt(0, lexicon.getWordCount() - 1);
         String currentWord = lexicon.getWord(idx);
         String guessedWord = getGuessedWord(currentWord.length());
 
@@ -47,6 +47,7 @@ public class Hangman extends ConsoleProgram {
         }
     }
 
+    // replaces "-" character with the correctly guessed letter
     private String updateGuessWord(String guessedWord, String currentWord, char guess) {
         StringBuilder updatedWord = new StringBuilder(guessedWord);
 
@@ -59,7 +60,7 @@ public class Hangman extends ConsoleProgram {
         return updatedWord.toString();
     }
 
-    // check if the current word contains the guessed character
+    // checks if the current word contains the guessed character
     private Boolean isValidGuess(char guess, String word) {
         return word.contains("" + guess) ? true : false;
     }
@@ -68,11 +69,25 @@ public class Hangman extends ConsoleProgram {
     private char readChar(String prompt) {
         String ch = null;
 
-        do {
+        while (ch == null || ch.length() != 1) {
             ch = readLine(prompt);
-        } while (ch.length() != 1);
+            if (isInvalidCharInput(ch.charAt(0))) {
+                println("Error: invalid input, enter a single letter");
+                ch = null;
+            }
+        }
 
+        System.out.println("WHAT");
         return ch.toUpperCase().charAt(0);
+    }
+
+    // checks if the character is a letter
+    private Boolean isInvalidCharInput(char ch) {
+        if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')) {
+            return false;
+        }
+
+        return true;
     }
 
     // fill the string with "-" characters
