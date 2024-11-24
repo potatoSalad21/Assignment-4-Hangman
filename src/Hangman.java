@@ -10,9 +10,19 @@ public class Hangman extends ConsoleProgram {
     private static RandomGenerator rgen = RandomGenerator.getInstance();
     private static HangmanLexicon lexicon = new HangmanLexicon();
 
+    private HangmanCanvas canvas;
+
+    public void init() {
+        canvas = new HangmanCanvas();
+        add(canvas);
+    }
+
     public void run() {
         println("Welcome to Hangman!");
-        beginRound();
+        while (true) {
+            canvas.reset();
+            beginRound();
+        }
     }
 
     private void beginRound() {
@@ -21,20 +31,27 @@ public class Hangman extends ConsoleProgram {
         String currentWord = lexicon.getWord(idx);
         String guessedWord = getGuessedWord(currentWord.length());
 
+        // display the word initially
+        canvas.displayWord(guessedWord);
+
+        /* for testing */
         System.out.println("Word: " + currentWord);
+        /*  ---------- */
 
         while (attemptCount > 0 && !guessedWord.equals(currentWord)) {
             println("The word now looks like this: " + guessedWord);
             println("You have " + attemptCount + " guesses left.");
 
-            char guess = readChar("Your guess: ");
+            char letter = readChar("Your guess: ");
 
-            if (isValidGuess(guess, currentWord)) {
-                guessedWord = updateGuessWord(guessedWord, currentWord, guess);
+            if (isCorrectGuess(letter, currentWord)) {
+                guessedWord = updateGuessWord(guessedWord, currentWord, letter);
+                canvas.displayWord(guessedWord);
                 println("That guess is correct.");
             } else {
                 attemptCount--;
-                println("There are no " + guess + "'s in the word.");
+                canvas.noteIncorrectGuess(letter);
+                println("There are no " + letter + "'s in the word.");
             }
         }
 
@@ -48,21 +65,21 @@ public class Hangman extends ConsoleProgram {
     }
 
     // replaces "-" character with the correctly guessed letter
-    private String updateGuessWord(String guessedWord, String currentWord, char guess) {
+    private String updateGuessWord(String guessedWord, String currentWord, char letter) {
         StringBuilder updatedWord = new StringBuilder(guessedWord);
 
-        int charPos = currentWord.indexOf(guess);
+        int charPos = currentWord.indexOf(letter);
         while (charPos != -1) {
-            updatedWord.setCharAt(charPos, guess);
-            charPos = currentWord.indexOf(guess, charPos + 1);
+            updatedWord.setCharAt(charPos, letter);
+            charPos = currentWord.indexOf(letter, charPos + 1);
         }
 
         return updatedWord.toString();
     }
 
     // checks if the current word contains the guessed character
-    private Boolean isValidGuess(char guess, String word) {
-        return word.contains("" + guess) ? true : false;
+    private Boolean isCorrectGuess(char letter, String word) {
+        return word.contains("" + letter) ? true : false;
     }
 
     // general method for accepting character input
@@ -77,7 +94,6 @@ public class Hangman extends ConsoleProgram {
             }
         }
 
-        System.out.println("WHAT");
         return ch.toUpperCase().charAt(0);
     }
 

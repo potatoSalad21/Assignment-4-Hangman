@@ -5,13 +5,26 @@
  */
 
 import acm.graphics.*;
+import java.awt.*;
 
 public class HangmanCanvas extends GCanvas {
+    private GLabel wordLabel;
+    private GLabel wrongGuessLabel;
 
 /** Resets the display so that only the scaffold appears */
 	public void reset() {
-		/* You fill this in */
+        removeAll();
+        drawStructure();
 	}
+
+    private void drawStructure() {
+        int startingX = getWidth() / 2 - BEAM_LENGTH;
+        int startingY = getHeight() / 2 - ARM_OFFSET_FROM_HEAD - 2 * HEAD_RADIUS - ROPE_LENGTH;
+
+        drawScaffold(startingX, startingY);
+        drawBeam(startingX, startingY);
+        drawRope(startingY);
+    }
 
 /**
  * Updates the word on the screen to correspond to the current
@@ -19,7 +32,16 @@ public class HangmanCanvas extends GCanvas {
  * been guessed so far; unguessed letters are indicated by hyphens.
  */
 	public void displayWord(String word) {
-		/* You fill this in */
+        double labelY = SCAFFOLD_HEIGHT + BODY_LENGTH * 2;
+
+        if (wordLabel == null) {
+            wordLabel = new GLabel(word);
+            wordLabel.setFont(new Font("Serif-25", Font.BOLD, 16));
+
+            add(wordLabel, WORD_X_OFFSET, labelY);
+        } else {
+            wordLabel.setLabel(word);
+        }
 	}
 
 /**
@@ -29,10 +51,36 @@ public class HangmanCanvas extends GCanvas {
  * guesses that appears at the bottom of the window.
  */
 	public void noteIncorrectGuess(char letter) {
-		/* You fill this in */
+        if (wrongGuessLabel == null) {
+            wrongGuessLabel = new GLabel("");
+            wrongGuessLabel.setFont(new Font("Serif-25", Font.BOLD, 14));
+
+            add(wrongGuessLabel);
+        }
+
+        String prevText = wrongGuessLabel.getLabel();
+        wrongGuessLabel.setLabel(prevText + letter);
 	}
 
+    private void drawScaffold(int startingX, int startingY) {
+        GLine scaffold = new GLine(startingX, startingY, startingX, startingY + SCAFFOLD_HEIGHT);
+        add(scaffold);
+    }
+
+    private void drawBeam(int startingX, int startingY) {
+        GLine beam = new GLine(startingX, startingY, startingX + BEAM_LENGTH, startingY);
+        add(beam);
+    }
+
+    private void drawRope(int startingY) {
+        int centerX = getWidth() / 2;
+        GLine rope = new GLine(centerX, startingY, centerX, startingY + ROPE_LENGTH);
+        add(rope);
+    }
+
 /* Constants for the simple version of the picture (in pixels) */
+    private static final int WORD_X_OFFSET = 50;
+
 	private static final int SCAFFOLD_HEIGHT = 360;
 	private static final int BEAM_LENGTH = 144;
 	private static final int ROPE_LENGTH = 18;
