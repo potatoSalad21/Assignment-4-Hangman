@@ -32,11 +32,11 @@ public class HangmanCanvas extends GCanvas {
  * been guessed so far; unguessed letters are indicated by hyphens.
  */
 	public void displayWord(String word) {
-        double labelY = SCAFFOLD_HEIGHT + BODY_LENGTH * 2;
+        int labelY = getHeight() / 2 + SCAFFOLD_HEIGHT;
 
         if (wordLabel == null) {
             wordLabel = new GLabel(word);
-            wordLabel.setFont(new Font("Serif-25", Font.BOLD, 16));
+            wordLabel.setFont(new Font("Serif-25", Font.BOLD, 20));
 
             add(wordLabel, WORD_X_OFFSET, labelY);
         } else {
@@ -53,9 +53,9 @@ public class HangmanCanvas extends GCanvas {
 	public void noteIncorrectGuess(char letter) {
         if (wrongGuessLabel == null) {
             wrongGuessLabel = new GLabel("");
-            wrongGuessLabel.setFont(new Font("Serif-25", Font.BOLD, 14));
+            wrongGuessLabel.setFont(new Font("Serif-25", Font.BOLD, 16));
 
-            add(wrongGuessLabel);
+            add(wrongGuessLabel, WORD_X_OFFSET, getHeight() / 2 + SCAFFOLD_HEIGHT + WORD_GAP_HEIGHT);
         }
 
         String prevText = wrongGuessLabel.getLabel();
@@ -80,6 +80,7 @@ public class HangmanCanvas extends GCanvas {
 
 /* Constants for the simple version of the picture (in pixels) */
     private static final int WORD_X_OFFSET = 50;
+    private static final int WORD_GAP_HEIGHT = 20;
 
 	private static final int SCAFFOLD_HEIGHT = 360;
 	private static final int BEAM_LENGTH = 144;

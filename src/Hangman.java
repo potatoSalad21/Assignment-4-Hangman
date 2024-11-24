@@ -25,6 +25,7 @@ public class Hangman extends ConsoleProgram {
         }
     }
 
+    // TODO decompose this >
     private void beginRound() {
         int attemptCount = GUESS_COUNT;
         int idx = rgen.nextInt(0, lexicon.getWordCount() - 1);
@@ -45,6 +46,8 @@ public class Hangman extends ConsoleProgram {
             char letter = readChar("Your guess: ");
 
             if (isCorrectGuess(letter, currentWord)) {
+                if guessedWord.contains(letter) continue; // in case the letter is repeated
+
                 guessedWord = updateGuessWord(guessedWord, currentWord, letter);
                 canvas.displayWord(guessedWord);
                 println("That guess is correct.");
@@ -55,13 +58,8 @@ public class Hangman extends ConsoleProgram {
             }
         }
 
-        if (guessedWord.equals(currentWord)) {
-            println("You guessed the word: " + currentWord);
-            println("You win.");
-        } else {
-            println("The word was: " + currentWord);
-            println("You lose.");
-        }
+        checkGameState(guessedWord, currentWord);
+
     }
 
     // replaces "-" character with the correctly guessed letter
@@ -95,6 +93,17 @@ public class Hangman extends ConsoleProgram {
         }
 
         return ch.toUpperCase().charAt(0);
+    }
+
+    // handle the game's ending, display results
+    private void checkGameState(String guessedWord, String currentWord) {
+        if (guessedWord.equals(currentWord)) {
+            println("You guessed the word: " + currentWord);
+            println("You win.");
+        } else {
+            println("The word was: " + currentWord);
+            println("You lose.");
+        }
     }
 
     // checks if the character is a letter
