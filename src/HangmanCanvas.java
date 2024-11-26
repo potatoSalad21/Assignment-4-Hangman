@@ -140,11 +140,23 @@ public class HangmanCanvas extends GCanvas {
     }
 
     private void drawLeftHand(int centerX, int centerY) {
+        int upperArmStartX = centerX - UPPER_ARM_LENGTH;
 
+        GLine upperArm = new GLine(upperArmStartX, centerY, centerX, centerY);
+        GLine lowerArm = new GLine(upperArmStartX, centerY, upperArmStartX, centerY + LOWER_ARM_LENGTH);
+
+        add(upperArm);
+        add(lowerArm);
     }
 
-    private void drawRightHand() {
+    private void drawRightHand(int centerX, int centerY) {
+        int upperArmEndX = centerX + UPPER_ARM_LENGTH;
 
+        GLine upperArm = new GLine(centerX, centerY, upperArmEndX, centerY);
+        GLine lowerArm = new GLine(upperArmEndX, centerY, upperArmEndX, centerY + LOWER_ARM_LENGTH);
+
+        add(upperArm);
+        add(lowerArm);
     }
 
     private void drawLeftLeg() {
