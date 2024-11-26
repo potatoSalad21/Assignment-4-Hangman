@@ -17,6 +17,7 @@ public class HangmanCanvas extends GCanvas {
         drawStructure();
 	}
 
+    // draw all structures
     private void drawStructure() {
         int startingX = getWidth() / 2 - BEAM_LENGTH;
         int startingY = getHeight() / 2 - ARM_OFFSET_FROM_HEAD - 2 * HEAD_RADIUS - ROPE_LENGTH;
@@ -36,7 +37,7 @@ public class HangmanCanvas extends GCanvas {
 
         if (wordLabel == null) {
             wordLabel = new GLabel(word);
-            wordLabel.setFont(new Font("Serif-25", Font.BOLD, 20));
+            wordLabel.setFont(new Font("Arial", Font.PLAIN, 20));
 
             add(wordLabel, WORD_X_OFFSET, labelY);
         } else {
@@ -53,15 +54,54 @@ public class HangmanCanvas extends GCanvas {
 	public void noteIncorrectGuess(char letter) {
         if (wrongGuessLabel == null) {
             wrongGuessLabel = new GLabel("");
-            wrongGuessLabel.setFont(new Font("Serif-25", Font.BOLD, 16));
+            wrongGuessLabel.setFont(new Font("Arial", Font.PLAIN, 14));
 
             add(wrongGuessLabel, WORD_X_OFFSET, getHeight() / 2 + SCAFFOLD_HEIGHT + WORD_GAP_HEIGHT);
         }
 
         String prevText = wrongGuessLabel.getLabel();
         wrongGuessLabel.setLabel(prevText + letter);
+
+        int wrongGuessNum = wrongGuessLabel.getLabel().length();
+        drawBodyPart(wrongGuessNum);
 	}
 
+    // draw a body part according to the number of wrong guesses
+    private void drawBodyPart(int num) {
+        int centerX = getWidth() / 2;
+        int centerY = getHeight() / 2;
+
+        switch (num) {
+        case 1:
+            drawHead(centerX, centerY);
+            break;
+        case 2:
+            drawBody(centerX, centerY);
+            break;
+        case 3:
+            drawLeftHand(centerX, centerY);
+            break;
+        case 4:
+            drawRightHand(centerX, centerY);
+            break;
+        case 5:
+            drawLeftLeg();
+            break;
+        case 6:
+            drawRightLeg();
+            break;
+        case 7:
+            drawLeftFoot();
+            break;
+        case 8:
+            drawRightFoot();
+            break;
+        }
+    }
+
+    /*
+     *  ~~ DRAW METHODS FOR THE STRUCTURES ~~
+     */
     private void drawScaffold(int startingX, int startingY) {
         GLine scaffold = new GLine(startingX, startingY, startingX, startingY + SCAFFOLD_HEIGHT);
         add(scaffold);
@@ -76,6 +116,51 @@ public class HangmanCanvas extends GCanvas {
         int centerX = getWidth() / 2;
         GLine rope = new GLine(centerX, startingY, centerX, startingY + ROPE_LENGTH);
         add(rope);
+    }
+
+    /*
+     *  ~~ DRAW METHODS FOR THE BODY PARTS ~~
+     */
+    private void drawHead(int centerX, int centerY) {
+        int headDiameter = 2 * HEAD_RADIUS;
+
+        int headX = centerX - HEAD_RADIUS;
+        int headY = centerY - ARM_OFFSET_FROM_HEAD - headDiameter;
+
+        GOval head = new GOval(headX, headY, headDiameter, headDiameter);
+        add(head);
+    }
+
+    private void drawBody(int centerX, int centerY) {
+        int startY = centerY - ARM_OFFSET_FROM_HEAD;
+        int endY = startY + BODY_LENGTH;
+
+        GLine body = new GLine(centerX, startY, centerX, endY);
+        add(body);
+    }
+
+    private void drawLeftHand(int centerX, int centerY) {
+
+    }
+
+    private void drawRightHand() {
+
+    }
+
+    private void drawLeftLeg() {
+
+    }
+
+    private void drawRightLeg() {
+
+    }
+
+    private void drawLeftFoot() {
+
+    }
+
+    private void drawRightFoot() {
+
     }
 
 /* Constants for the simple version of the picture (in pixels) */
