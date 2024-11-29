@@ -71,12 +71,15 @@ public class HangmanCanvas extends GCanvas {
         int centerX = getWidth() / 2;
         int centerY = getHeight() / 2;
 
+        int bodyStartY = centerY - ARM_OFFSET_FROM_HEAD;
+        int bodyEndY = startY + BODY_LENGTH;
+
         switch (num) {
         case 1:
             drawHead(centerX, centerY);
             break;
         case 2:
-            drawBody(centerX, centerY);
+            drawBody(centerX, centerY, bodyStartY, bodyEndY);
             break;
         case 3:
             drawLeftHand(centerX, centerY);
@@ -85,16 +88,16 @@ public class HangmanCanvas extends GCanvas {
             drawRightHand(centerX, centerY);
             break;
         case 5:
-            drawLeftLeg();
+            drawLeftLeg(centerX, bodyEndY);
             break;
         case 6:
-            drawRightLeg();
+            drawRightLeg(centerX, bodyEndY);
             break;
         case 7:
-            drawLeftFoot();
+            drawLeftFoot(centerX, bodyEndY);
             break;
         case 8:
-            drawRightFoot();
+            drawRightFoot(centerX, bodyEndY);
             break;
         }
     }
@@ -131,11 +134,8 @@ public class HangmanCanvas extends GCanvas {
         add(head);
     }
 
-    private void drawBody(int centerX, int centerY) {
-        int startY = centerY - ARM_OFFSET_FROM_HEAD;
-        int endY = startY + BODY_LENGTH;
-
-        GLine body = new GLine(centerX, startY, centerX, endY);
+    private void drawBody(int centerX, int centerY, int bodyStartY, int bodyEndY) {
+        GLine body = new GLine(centerX, bodyStartY, centerX, bodyEndY);
         add(body);
     }
 
@@ -159,20 +159,38 @@ public class HangmanCanvas extends GCanvas {
         add(lowerArm);
     }
 
-    private void drawLeftLeg() {
+    private void drawLeftLeg(int centerX, int bodyEndY) {
+        int upperLegStartX = centerX - HIP_WIDTH;
+        GLine upperLeg = new GLine(upperLegStartX, bodyEndY, centerX, bodyEndY);
+        GLine lowerLeg = new GLine(upperLegStartX, bodyEndY, upperLegStartX, bodyEndY + LEG_LENGTH);
 
+        add(upperLeg);
+        add(lowerLeg);
     }
 
-    private void drawRightLeg() {
+    private void drawRightLeg(int centerX, int bodyEndY) {
+        int upperLegEndX = centerX + HIP_WIDTH;
+        GLine uppperLeg = new GLine(centerX, bodyEndY, upperLegEndX);
+        GLine lowerLeg = new GLine(uppperLegEndX, bodyEndY, upperLegEndX, bodyEndY + LEG_LENGTH);
 
+        add(upperLeg);
+        add(lowerLeg);
     }
 
-    private void drawLeftFoot() {
+    private void drawLeftFoot(int centerX, int bodyEndY) {
+        int startingX = centerX - HIP_WIDTH - FOOT_LENGTH;
+        int footY = bodyEndY + LEG_LENGTH;
 
+        GLine foot = new GLine(startingX, footY, startingX + FOOT_LENGTH, footY);
+        add(foot);
     }
 
-    private void drawRightFoot() {
+    private void drawRightFoot(int centerX, int bodyEndY) {
+        int statingX = centerX + HIP_WIDTH;
+        int footY = bodyEndY + LEG_LENGTH;
 
+        GLine foot = new GLine(startingX, footY, startingX + FOOT_LENGTH, footY);
+        add(foot);
     }
 
 /* Constants for the simple version of the picture (in pixels) */
