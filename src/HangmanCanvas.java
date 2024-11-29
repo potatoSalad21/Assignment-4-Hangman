@@ -72,7 +72,7 @@ public class HangmanCanvas extends GCanvas {
         int centerY = getHeight() / 2;
 
         int bodyStartY = centerY - ARM_OFFSET_FROM_HEAD;
-        int bodyEndY = startY + BODY_LENGTH;
+        int bodyEndY = bodyStartY + BODY_LENGTH;
 
         switch (num) {
         case 1:
@@ -170,8 +170,8 @@ public class HangmanCanvas extends GCanvas {
 
     private void drawRightLeg(int centerX, int bodyEndY) {
         int upperLegEndX = centerX + HIP_WIDTH;
-        GLine uppperLeg = new GLine(centerX, bodyEndY, upperLegEndX);
-        GLine lowerLeg = new GLine(uppperLegEndX, bodyEndY, upperLegEndX, bodyEndY + LEG_LENGTH);
+        GLine upperLeg = new GLine(centerX, bodyEndY, upperLegEndX, bodyEndY);
+        GLine lowerLeg = new GLine(upperLegEndX, bodyEndY, upperLegEndX, bodyEndY + LEG_LENGTH);
 
         add(upperLeg);
         add(lowerLeg);
@@ -186,7 +186,7 @@ public class HangmanCanvas extends GCanvas {
     }
 
     private void drawRightFoot(int centerX, int bodyEndY) {
-        int statingX = centerX + HIP_WIDTH;
+        int startingX = centerX + HIP_WIDTH;
         int footY = bodyEndY + LEG_LENGTH;
 
         GLine foot = new GLine(startingX, footY, startingX + FOOT_LENGTH, footY);
@@ -195,7 +195,7 @@ public class HangmanCanvas extends GCanvas {
 
 /* Constants for the simple version of the picture (in pixels) */
     private static final int WORD_X_OFFSET = 50;
-    private static final int WORD_GAP_HEIGHT = 20;
+    private static final int WORD_GAP_HEIGHT = 60;
 
 	private static final int SCAFFOLD_HEIGHT = 360;
 	private static final int BEAM_LENGTH = 144;

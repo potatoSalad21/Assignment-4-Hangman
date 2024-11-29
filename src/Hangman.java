@@ -6,6 +6,7 @@ import java.awt.*;
 
 public class Hangman extends ConsoleProgram {
     private static final int GUESS_COUNT = 8;
+    private static final int TIME_BETWEEN_ROUNDS = 300;
 
     private static RandomGenerator rgen = RandomGenerator.getInstance();
     private static HangmanLexicon lexicon = new HangmanLexicon();
@@ -22,6 +23,8 @@ public class Hangman extends ConsoleProgram {
         while (true) {
             canvas.reset();
             beginRound();
+
+            pause(TIME_BETWEEN_ROUNDS);
         }
     }
 
@@ -34,10 +37,6 @@ public class Hangman extends ConsoleProgram {
 
         // display the word initially
         canvas.displayWord(guessedWord);
-
-        /* for testing */
-        System.out.println("Word: " + currentWord);
-        /*  ---------- */
 
         runAttempts(attemptCount, guessedWord, currentWord);
         checkGameState(guessedWord, currentWord);
@@ -57,8 +56,11 @@ public class Hangman extends ConsoleProgram {
                 canvas.displayWord(guessedWord);
                 println("That guess is correct.");
             } else {
+                if (!guessedWord.contains("" + letter)) {
+                    canvas.noteIncorrectGuess(letter);
+                }
+
                 attemptCount--;
-                canvas.noteIncorrectGuess(letter);
                 println("There are no " + letter + "'s in the word.");
             }
         }
@@ -108,15 +110,6 @@ public class Hangman extends ConsoleProgram {
         }
     }
 
-    // checks if the character is a letter
-    private Boolean isInvalidCharInput(char ch) {
-        if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')) {
-            return false;
-        }
-
-        return true;
-    }
-
     // fill the string with "-" characters
     private String getGuessedWord(int length) {
         String guessedWord = "";
@@ -125,5 +118,14 @@ public class Hangman extends ConsoleProgram {
         }
 
         return guessedWord;
+    }
+
+    // checks if the character is a letter
+    private Boolean isInvalidCharInput(char ch) {
+        if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')) {
+            return false;
+        }
+
+        return true;
     }
 }
