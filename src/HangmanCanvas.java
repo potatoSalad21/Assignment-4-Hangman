@@ -14,8 +14,14 @@ public class HangmanCanvas extends GCanvas {
 /** Resets the display so that only the scaffold appears */
 	public void reset() {
         removeAll();
+        removeLabels();
         drawStructure();
 	}
+
+    private void removeLabels() {
+        wordLabel = null;
+        wrongGuessLabel = null;
+    }
 
     // draw all structures
     private void drawStructure() {
@@ -60,7 +66,9 @@ public class HangmanCanvas extends GCanvas {
         }
 
         String prevText = wrongGuessLabel.getLabel();
-        wrongGuessLabel.setLabel(prevText + letter);
+        if (!prevText.contains("" + letter)) {
+            wrongGuessLabel.setLabel(prevText + letter);
+        }
 
         int wrongGuessNum = wrongGuessLabel.getLabel().length();
         drawBodyPart(wrongGuessNum);

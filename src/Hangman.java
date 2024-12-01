@@ -35,11 +35,13 @@ public class Hangman extends ConsoleProgram {
         String currentWord = lexicon.getWord(idx);
         String guessedWord = getGuessedWord(currentWord.length());
 
+        // for testing
+        System.out.println(currentWord);
+
         // display the word initially
         canvas.displayWord(guessedWord);
 
         runAttempts(attemptCount, guessedWord, currentWord);
-        checkGameState(guessedWord, currentWord);
     }
 
     // continuously accepts letter input from user and checks if it's correct (and also valid)
@@ -56,14 +58,13 @@ public class Hangman extends ConsoleProgram {
                 canvas.displayWord(guessedWord);
                 println("That guess is correct.");
             } else {
-                if (!guessedWord.contains("" + letter)) {
-                    canvas.noteIncorrectGuess(letter);
-                }
-
+                canvas.noteIncorrectGuess(letter);
                 attemptCount--;
                 println("There are no " + letter + "'s in the word.");
             }
         }
+
+        checkGameState(guessedWord, currentWord);
     }
 
     // replaces "-" character with the correctly guessed letter
@@ -80,11 +81,11 @@ public class Hangman extends ConsoleProgram {
     }
 
     // checks if the current word contains the guessed character
-    private Boolean isCorrectGuess(char letter, String word) {
+    private boolean isCorrectGuess(char letter, String word) {
         return word.contains("" + letter) ? true : false;
     }
 
-    // general method for accepting character input
+    // general method for accepting uppercased character input
     private char readChar(String prompt) {
         String ch = null;
 
@@ -121,7 +122,7 @@ public class Hangman extends ConsoleProgram {
     }
 
     // checks if the character is a letter
-    private Boolean isInvalidCharInput(char ch) {
+    private boolean isInvalidCharInput(char ch) {
         if ((ch >= 'A' && ch <= 'Z') || (ch >= 'a' && ch <= 'z')) {
             return false;
         }
