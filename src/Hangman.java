@@ -49,7 +49,7 @@ public class Hangman extends ConsoleProgram {
         while (attemptCount > 0 && !guessedWord.equals(currentWord)) {
             println("The word now looks like this: " + guessedWord);
             println("You have " + attemptCount + " guesses left.");
-            char letter = readChar("Your guess: ");
+            char letter = Character.toUpperCase(readChar("Your guess: "));
 
             if (isCorrectGuess(letter, currentWord)) {
                 if (guessedWord.contains("" + letter)) continue; // in case the letter is repeated
@@ -85,7 +85,7 @@ public class Hangman extends ConsoleProgram {
         return word.contains("" + letter) ? true : false;
     }
 
-    // general method for accepting uppercased character input
+    // general method for accepting character input
     private char readChar(String prompt) {
         String ch = null;
 
@@ -97,7 +97,7 @@ public class Hangman extends ConsoleProgram {
             }
         }
 
-        return ch.toUpperCase().charAt(0);
+        return ch.charAt(0);
     }
 
     // handle the game's ending, display results
