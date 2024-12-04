@@ -1,20 +1,38 @@
+import java.io.IOException;
+
 import acm.program.ConsoleProgram;
-import acm.program.*;
-import acm.util.*;
+import acm.util.RandomGenerator;
+import acm.util.SwingTimer;
+import acm.util.MediaTools;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import java.awt.*;
+import java.awt.event.*;
+import java.applet.*;
 
-public class Hangman extends ConsoleProgram {
+public class HangmanExt extends ConsoleProgram {
     private static final int GUESS_COUNT = 8;
+    private static final int ROUND_TIME = 15;
     private static final int TIME_BETWEEN_ROUNDS = 300;
+    private static final int TIMER_RATE = 1000;
+    private static final String ASSET_PATH = "./assets/";
+
+    private static AudioClip deathSfx = MediaTools.loadAudioClip(ASSET_PATH + "death.wav");
+    private static AudioClip incorrectGuessSfx = MediaTools.loadAudioClip(ASSET_PATH + "incorrect.wav");
+    private static AudioClip tickSfx = MediaTools.loadAudioClip(ASSET_PATH + "tick.wav");
 
     private static RandomGenerator rgen = RandomGenerator.getInstance();
-    private static HangmanLexicon lexicon = new HangmanLexicon();
+    private static HangmanLexiconExt lexicon = new HangmanLexiconExt();
 
-    private HangmanCanvas canvas;
+    private HangmanCanvasExt canvas;
+    private Timer timer;
+    private TimerTask timerTask;
+    private int timeLeft;
+    private String currentWord;
+    private boolean roundRunning = false;
 
     public void init() {
-        canvas = new HangmanCanvas();
+        canvas = new HangmanCanvasExt();
         add(canvas);
     }
 
@@ -30,40 +48,66 @@ public class Hangman extends ConsoleProgram {
 
     // runs one round of the game
     private void beginRound() {
+        // set initial values before for round
+        roundRunning = true;
+        timeLeft = ROUND_TIME;
         int attemptCount = GUESS_COUNT;
+
         int idx = rgen.nextInt(0, lexicon.getWordCount() - 1);
-        String currentWord = lexicon.getWord(idx);
+        currentWord = lexicon.getWord(idx);
         String guessedWord = getGuessedWord(currentWord.length());
 
-        // display the word initially
-        canvas.displayWord(guessedWord);
+        // for testing
+        System.out.println(currentWord);
 
-        runAttempts(attemptCount, guessedWord, currentWord);
+        initTimer();
+        canvas.displayWord(guessedWord);
+        runAttempts(attemptCount, guessedWord);
     }
 
     // continuously accepts letter input from user and checks if it's correct (and also valid)
-    private void runAttempts(int attemptCount, String guessedWord, String currentWord) {
-        while (attemptCount > 0 && !guessedWord.equals(currentWord)) {
+    private void runAttempts(int attemptCount, String guessedWord) {
+        while (roundRunning && attemptCount > 0 && !guessedWord.equals(currentWord)) {
             println("The word now looks like this: " + guessedWord);
             println("You have " + attemptCount + " guesses left.");
             char letter = Character.toUpperCase(readChar("Your guess: "));
 
-            if (isCorrectGuess(letter, currentWord)) {
+            if (isCorrectGuess(letter)) {
                 if (guessedWord.contains("" + letter)) continue; // in case the letter is repeated
 
-                guessedWord = updateGuessWord(guessedWord, currentWord, letter);
+                guessedWord = updateGuessWord(guessedWord, letter);
                 canvas.displayWord(guessedWord);
+                timeLeft++;
                 println("That guess is correct.");
             } else {
                 attemptCount--;
                 handleIncorrectGuess(letter, attemptCount);
             }
         }
-        checkGameState(guessedWord, currentWord);
+        checkGameState(guessedWord);
+    }
+
+    // runs the timer to limit the player in time
+    private void initTimer() {
+        timer = new Timer();
+        timerTask = new TimerTask() {
+            public void run() {
+                timeLeft--;
+                tickSfx.play();
+                canvas.updateTimer(timeLeft, ROUND_TIME);
+                if (timeLeft < 0) {
+                    roundRunning = false;
+                    handleGameLoss();
+                }
+            }
+        };
+
+        timer.schedule(timerTask, 0, TIMER_RATE);
     }
 
     // in case the guessed letter was not in the word
     private void handleIncorrectGuess(char letter, int attemptCount) {
+        incorrectGuessSfx.play();
         int wrongGuessNum = GUESS_COUNT - attemptCount;
         canvas.noteIncorrectGuess(letter, wrongGuessNum);
 
@@ -71,7 +115,7 @@ public class Hangman extends ConsoleProgram {
     }
 
     // replaces "-" character with the correctly guessed letter
-    private String updateGuessWord(String guessedWord, String currentWord, char letter) {
+    private String updateGuessWord(String guessedWord, char letter) {
         StringBuilder updatedWord = new StringBuilder(guessedWord);
 
         int charPos = currentWord.indexOf(letter);
@@ -84,8 +128,8 @@ public class Hangman extends ConsoleProgram {
     }
 
     // checks if the current word contains the guessed character
-    private boolean isCorrectGuess(char letter, String word) {
-        return word.contains("" + letter) ? true : false;
+    private boolean isCorrectGuess(char letter) {
+        return currentWord.contains("" + letter) ? true : false;
     }
 
     // general method for accepting character input
@@ -98,24 +142,35 @@ public class Hangman extends ConsoleProgram {
             if (isInvalidCharInput(ch.charAt(0))) {
                 println("Error: invalid input, enter a single letter");
                 ch = null;
-            } else {
-                break;
-            }
-
+            } else break;
         }
 
         return ch.charAt(0);
     }
 
     // handle the game's ending, display results
-    private void checkGameState(String guessedWord, String currentWord) {
+    private void checkGameState(String guessedWord) {
+        roundRunning = false;
         if (guessedWord.equals(currentWord)) {
             println("You guessed the word: " + currentWord);
             println("You win.");
         } else {
-            println("The word was: " + currentWord);
-            println("You lose.");
+            handleGameLoss();
         }
+    }
+
+    private void resetTimer() {
+        timer.cancel();
+        timer = null;
+        timerTask = null;
+    }
+
+    private void handleGameLoss() {
+        resetTimer();
+
+        println("The word was: " + currentWord);
+        println("You lose.");
+        deathSfx.play();
     }
 
     // fill the string with "-" characters

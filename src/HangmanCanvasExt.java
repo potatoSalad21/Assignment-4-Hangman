@@ -7,15 +7,19 @@
 import acm.graphics.*;
 import java.awt.*;
 
-public class HangmanCanvas extends GCanvas {
+public class HangmanCanvasExt extends GCanvas {
     private GLabel wordLabel;
     private GLabel wrongGuessLabel;
+
+    private GRect timerBar;
+    private GRect fillerBar;
 
 /** Resets the display so that only the scaffold appears */
 	public void reset() {
         removeAll();
         removeLabels();
         drawStructure();
+        drawTimer();
 	}
 
     private void removeLabels() {
@@ -50,6 +54,26 @@ public class HangmanCanvas extends GCanvas {
             wordLabel.setLabel(word);
         }
 	}
+
+/**
+ *  Updates the time bar on the screen according to how
+ *  much time is left during the round.
+ */
+    public void updateTimer(int timeLeft, int roundTime) {
+        double fillRatio = (double) timeLeft / (double) roundTime;
+        fillerBar.setSize(BAR_WIDTH * fillRatio, BAR_HEIGHT);
+    }
+
+    // draws the initial state of the time bar
+    private void drawTimer() {
+        double barX = (getWidth() - BAR_WIDTH) / 2.0;
+        timerBar = new GRect(BAR_WIDTH, BAR_HEIGHT);
+        fillerBar = new GRect(BAR_WIDTH, BAR_HEIGHT);
+        fillerBar.setFilled(true);
+
+        add(timerBar, barX, BAR_Y_OFFSET);
+        add(fillerBar, barX, BAR_Y_OFFSET);
+    }
 
 /**
  * Updates the display to correspond to an incorrect guess by the
@@ -203,6 +227,9 @@ public class HangmanCanvas extends GCanvas {
 /* Constants for the simple version of the picture (in pixels) */
     private static final int WORD_X_OFFSET = 50;
     private static final int WORD_GAP_HEIGHT = 60;
+    private static final int BAR_Y_OFFSET = 40;
+    private static final double BAR_WIDTH = 200;
+    private static final double BAR_HEIGHT = 50;
 
 	private static final int SCAFFOLD_HEIGHT = 360;
 	private static final int BEAM_LENGTH = 144;

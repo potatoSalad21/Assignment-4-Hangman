@@ -10,16 +10,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import acm.util.*;
-
-import java.applet.AudioClip;
-import java.awt.*;
-
-public class HangmanLexicon {
+public class HangmanLexiconExt {
     ArrayList wordList;
 
     // lexicon class constructor
-    public HangmanLexicon() {
+    public HangmanLexiconExt() {
         this.wordList = readFile("./ShorterLexicon.txt");
     }
 
