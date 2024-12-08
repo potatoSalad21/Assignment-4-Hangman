@@ -4,8 +4,10 @@ import acm.program.ConsoleProgram;
 import acm.util.RandomGenerator;
 import acm.util.SwingTimer;
 import acm.util.MediaTools;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import java.awt.event.*;
 import java.applet.*;
@@ -14,7 +16,6 @@ public class HangmanExt extends ConsoleProgram {
     private static final int GUESS_COUNT = 8;
     private static final int ROUND_TIME = 15;
     private static final int TIME_BETWEEN_ROUNDS = 300;
-    private static final int TIMER_RATE = 1000;
     private static final String ASSET_PATH = "./assets/";
 
     private static AudioClip deathSfx = MediaTools.loadAudioClip(ASSET_PATH + "death.wav");
@@ -25,8 +26,7 @@ public class HangmanExt extends ConsoleProgram {
     private static HangmanLexiconExt lexicon = new HangmanLexiconExt();
 
     private HangmanCanvasExt canvas;
-    private Timer timer;
-    private TimerTask timerTask;
+    private ScheduledExecutorService scheduler;
     private int timeLeft;
     private String currentWord;
     private boolean roundRunning = false;
@@ -77,7 +77,7 @@ public class HangmanExt extends ConsoleProgram {
 
                 guessedWord = updateGuessWord(guessedWord, letter);
                 canvas.displayWord(guessedWord);
-                timeLeft++;
+                timeLeft++;  // +1 sec for every correct guess
                 println("That guess is correct.");
             } else {
                 attemptCount--;
@@ -89,20 +89,19 @@ public class HangmanExt extends ConsoleProgram {
 
     // runs the timer to limit the player in time
     private void initTimer() {
-        timer = new Timer();
-        timerTask = new TimerTask() {
-            public void run() {
-                timeLeft--;
-                tickSfx.play();
-                canvas.updateTimer(timeLeft, ROUND_TIME);
-                if (timeLeft < 0) {
-                    roundRunning = false;
-                    handleGameLoss();
-                }
-            }
-        };
+        scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(() -> timerTask(), 0, 1, TimeUnit.SECONDS);
+    }
 
-        timer.schedule(timerTask, 0, TIMER_RATE);
+    // task which is to be run in set intervals
+    private void timerTask() {
+        timeLeft--;
+        tickSfx.play();
+        canvas.updateTimer(timeLeft, ROUND_TIME);
+        if (timeLeft <= 0) {
+            roundRunning = false;
+            scheduler.shutdown();
+        }
     }
 
     // in case the guessed letter was not in the word
@@ -157,17 +156,11 @@ public class HangmanExt extends ConsoleProgram {
         } else {
             handleGameLoss();
         }
-    }
 
-    private void resetTimer() {
-        timer.cancel();
-        timer = null;
-        timerTask = null;
+        scheduler.shutdown();
     }
 
     private void handleGameLoss() {
-        resetTimer();
-
         println("The word was: " + currentWord);
         println("You lose.");
         deathSfx.play();
