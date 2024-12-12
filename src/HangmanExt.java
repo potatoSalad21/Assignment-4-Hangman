@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import acm.program.ConsoleProgram;
 import acm.util.RandomGenerator;
@@ -14,7 +15,7 @@ import java.applet.*;
 
 public class HangmanExt extends ConsoleProgram {
     private static final int GUESS_COUNT = 8;
-    private static final int ROUND_TIME = 15;
+    private static final int ROUND_TIME = 5;
     private static final int TIME_BETWEEN_ROUNDS = 300;
     private static final String ASSET_PATH = "./assets/";
 
@@ -41,6 +42,7 @@ public class HangmanExt extends ConsoleProgram {
         while (true) {
             canvas.reset();
             beginRound();
+            println();
 
             pause(TIME_BETWEEN_ROUNDS);
         }
@@ -48,7 +50,7 @@ public class HangmanExt extends ConsoleProgram {
 
     // runs one round of the game
     private void beginRound() {
-        // set initial values before for round
+        // set initial values before the round
         roundRunning = true;
         timeLeft = ROUND_TIME;
         int attemptCount = GUESS_COUNT;
@@ -76,9 +78,7 @@ public class HangmanExt extends ConsoleProgram {
                 if (guessedWord.contains("" + letter)) continue; // in case the letter is repeated
 
                 guessedWord = updateGuessWord(guessedWord, letter);
-                canvas.displayWord(guessedWord);
-                timeLeft++;  // +1 sec for every correct guess
-                println("That guess is correct.");
+                handleCorrectGuess(guessedWord);
             } else {
                 attemptCount--;
                 handleIncorrectGuess(letter, attemptCount);
@@ -101,11 +101,23 @@ public class HangmanExt extends ConsoleProgram {
         if (timeLeft <= 0) {
             roundRunning = false;
             scheduler.shutdown();
+            handleGameLoss();
+            println("Press enter to play again!!!");
         }
+    }
+
+    private void handleCorrectGuess(String guess) {
+        canvas.displayWord(guess);
+        timeLeft++;  // +1 sec for every correct guess
+        println("That guess is correct.");
     }
 
     // in case the guessed letter was not in the word
     private void handleIncorrectGuess(char letter, int attemptCount) {
+        if (!roundRunning) {
+            return;
+        }
+
         incorrectGuessSfx.play();
         int wrongGuessNum = GUESS_COUNT - attemptCount;
         canvas.noteIncorrectGuess(letter, wrongGuessNum);
@@ -136,12 +148,16 @@ public class HangmanExt extends ConsoleProgram {
         String ch;
         while (true) {
             ch = readLine(prompt);
+            if (!roundRunning && ch.equals("")) {   // if user wants to start another round
+                return '0';
+            }
+
             if (ch == null || ch.length() != 1) continue;
 
             if (isInvalidCharInput(ch.charAt(0))) {
                 println("Error: invalid input, enter a single letter");
                 ch = null;
-            } else break;
+            } else break; // if the input is valid break out of the loop
         }
 
         return ch.charAt(0);
@@ -149,6 +165,10 @@ public class HangmanExt extends ConsoleProgram {
 
     // handle the game's ending, display results
     private void checkGameState(String guessedWord) {
+        if (!roundRunning) {  // in case player lost from the timer
+            return;
+        }
+
         roundRunning = false;
         if (guessedWord.equals(currentWord)) {
             println("You guessed the word: " + currentWord);

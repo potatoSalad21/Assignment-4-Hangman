@@ -6,7 +6,6 @@ import java.awt.*;
 
 public class Hangman extends ConsoleProgram {
     private static final int GUESS_COUNT = 8;
-    private static final int TIME_BETWEEN_ROUNDS = 300;
 
     private static RandomGenerator rgen = RandomGenerator.getInstance();
     private static HangmanLexicon lexicon = new HangmanLexicon();
@@ -20,12 +19,8 @@ public class Hangman extends ConsoleProgram {
 
     public void run() {
         println("Welcome to Hangman!");
-        while (true) {
-            canvas.reset();
-            beginRound();
-
-            pause(TIME_BETWEEN_ROUNDS);
-        }
+        canvas.reset();
+        beginRound();
     }
 
     // runs one round of the game
