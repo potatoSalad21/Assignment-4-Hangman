@@ -20,6 +20,7 @@ public class HangmanExt extends ConsoleProgram {
     private static final String ASSET_PATH = "./assets/";
 
     private static AudioClip deathSfx = MediaTools.loadAudioClip(ASSET_PATH + "death.wav");
+    private static AudioClip winSfx = MediaTools.loadAudioClip(ASSET_PATH + "win.wav");
     private static AudioClip incorrectGuessSfx = MediaTools.loadAudioClip(ASSET_PATH + "incorrect.wav");
     private static AudioClip tickSfx = MediaTools.loadAudioClip(ASSET_PATH + "tick.wav");
 
@@ -31,6 +32,7 @@ public class HangmanExt extends ConsoleProgram {
     private int timeLeft;
     private String currentWord;
     private boolean roundRunning = false;
+    private int roundNum = 0;
 
     public void init() {
         canvas = new HangmanCanvasExt();
@@ -55,6 +57,7 @@ public class HangmanExt extends ConsoleProgram {
         timeLeft = ROUND_TIME;
         int attemptCount = GUESS_COUNT;
 
+        roundNum++;
         int idx = rgen.nextInt(0, lexicon.getWordCount() - 1);
         currentWord = lexicon.getWord(idx);
         String guessedWord = getGuessedWord(currentWord.length());
@@ -64,6 +67,7 @@ public class HangmanExt extends ConsoleProgram {
 
         initTimer();
         canvas.displayWord(guessedWord);
+        canvas.drawRoundCount(roundNum);
         runAttempts(attemptCount, guessedWord);
     }
 
@@ -87,7 +91,7 @@ public class HangmanExt extends ConsoleProgram {
         checkGameState(guessedWord);
     }
 
-    // runs the timer to limit the player in time
+    // starts the timer on a seperate thread to limit the player in time
     private void initTimer() {
         scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(() -> timerTask(), 0, 1, TimeUnit.SECONDS);
@@ -171,8 +175,7 @@ public class HangmanExt extends ConsoleProgram {
 
         roundRunning = false;
         if (guessedWord.equals(currentWord)) {
-            println("You guessed the word: " + currentWord);
-            println("You win.");
+            handleGameWin();
         } else {
             handleGameLoss();
         }
@@ -181,9 +184,16 @@ public class HangmanExt extends ConsoleProgram {
     }
 
     private void handleGameLoss() {
+        deathSfx.play();
+        roundNum = 0;
         println("The word was: " + currentWord);
         println("You lose.");
-        deathSfx.play();
+    }
+
+    private void handleGameWin() {
+        winSfx.play();
+        println("You guessed the word: " + currentWord);
+        println("You win.");
     }
 
     // fill the string with "-" characters

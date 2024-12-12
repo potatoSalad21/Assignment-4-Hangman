@@ -86,7 +86,8 @@ public class HangmanCanvasExt extends GCanvas {
             wrongGuessLabel = new GLabel("");
             wrongGuessLabel.setFont(new Font("Arial", Font.PLAIN, 14));
 
-            add(wrongGuessLabel, WORD_X_OFFSET, getHeight() / 2 + SCAFFOLD_HEIGHT + WORD_GAP_HEIGHT);
+            int labelY = getHeight() / 2 + SCAFFOLD_HEIGHT + WORD_GAP_HEIGHT;
+            add(wrongGuessLabel, WORD_X_OFFSET, labelY);
         }
 
         String prevText = wrongGuessLabel.getLabel();
@@ -96,6 +97,14 @@ public class HangmanCanvasExt extends GCanvas {
 
         drawBodyPart(wrongGuessNum);
 	}
+
+    public void drawRoundCount(int num) {
+        GLabel roundLabel = new GLabel("Round " + num);
+        roundLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
+        roundLabel.setColor(Color.RED);
+
+        add(roundLabel, WORD_X_OFFSET, WORD_Y_OFFSET);
+    }
 
     // draw a body part according to the number of wrong guesses
     private void drawBodyPart(int num) {
@@ -226,6 +235,7 @@ public class HangmanCanvasExt extends GCanvas {
 
 /* Constants for the simple version of the picture (in pixels) */
     private static final int WORD_X_OFFSET = 50;
+    private static final int WORD_Y_OFFSET = 30;
     private static final int WORD_GAP_HEIGHT = 60;
     private static final int BAR_Y_OFFSET = 40;
     private static final double BAR_WIDTH = 200;
