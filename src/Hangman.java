@@ -45,7 +45,6 @@ public class Hangman extends ConsoleProgram {
 
             if (isCorrectGuess(letter, currentWord)) {
                 if (guessedWord.contains("" + letter)) continue; // in case the letter is repeated
-
                 guessedWord = updateGuessWord(guessedWord, currentWord, letter);
                 canvas.displayWord(guessedWord);
                 println("That guess is correct.");

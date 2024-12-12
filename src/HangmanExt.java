@@ -15,7 +15,7 @@ import java.applet.*;
 
 public class HangmanExt extends ConsoleProgram {
     private static final int GUESS_COUNT = 8;
-    private static final int ROUND_TIME = 5;
+    private static final int ROUND_TIME = 30;
     private static final int TIME_BETWEEN_ROUNDS = 300;
     private static final String ASSET_PATH = "./assets/";
 
@@ -54,10 +54,10 @@ public class HangmanExt extends ConsoleProgram {
     private void beginRound() {
         // set initial values before the round
         roundRunning = true;
-        timeLeft = ROUND_TIME;
+        roundNum++;
+        timeLeft = ROUND_TIME - roundNum;  // decrease time as player passes rounds
         int attemptCount = GUESS_COUNT;
 
-        roundNum++;
         int idx = rgen.nextInt(0, lexicon.getWordCount() - 1);
         currentWord = lexicon.getWord(idx);
         String guessedWord = getGuessedWord(currentWord.length());
@@ -101,7 +101,7 @@ public class HangmanExt extends ConsoleProgram {
     private void timerTask() {
         timeLeft--;
         tickSfx.play();
-        canvas.updateTimer(timeLeft, ROUND_TIME);
+        canvas.updateTimer(timeLeft, ROUND_TIME - roundNum);
         if (timeLeft <= 0) {
             roundRunning = false;
             scheduler.shutdown();

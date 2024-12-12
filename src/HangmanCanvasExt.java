@@ -98,12 +98,16 @@ public class HangmanCanvasExt extends GCanvas {
         drawBodyPart(wrongGuessNum);
 	}
 
+/*
+ * Displays the current number of rounds player has reached
+ */
     public void drawRoundCount(int num) {
         GLabel roundLabel = new GLabel("Round " + num);
         roundLabel.setFont(new Font("SansSerif", Font.BOLD, 20));
         roundLabel.setColor(Color.RED);
 
-        add(roundLabel, WORD_X_OFFSET, WORD_Y_OFFSET);
+        // draw along the timer bar
+        add(roundLabel, 0, BAR_Y_OFFSET + roundLabel.getAscent());
     }
 
     // draw a body part according to the number of wrong guesses
@@ -235,7 +239,6 @@ public class HangmanCanvasExt extends GCanvas {
 
 /* Constants for the simple version of the picture (in pixels) */
     private static final int WORD_X_OFFSET = 50;
-    private static final int WORD_Y_OFFSET = 30;
     private static final int WORD_GAP_HEIGHT = 60;
     private static final int BAR_Y_OFFSET = 40;
     private static final double BAR_WIDTH = 200;
